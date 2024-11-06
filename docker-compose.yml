@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web.api:
+    image: ${DOCKER_REGISTRY-}webapi
+    build:
+      context: .
+      dockerfile: WEB.API/Dockerfile
+    ports:
+      - "8001:80" 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80  
+    depends_on:
+      - postgres
+    restart: always  
+    networks:
+      - mynetwork
+  
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=useradmin
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
